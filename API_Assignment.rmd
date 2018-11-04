@@ -1,0 +1,84 @@
+---
+title: "API Assignment 4.2"
+author: "Brian Waite"
+date: "November 4, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#MediaWiki API Experiment
+
+###Student: Brian Waite Date:11/4/2018 Course: Doing Data Science, MSDS 6306
+
+
+#Introduction
+
+This document is used to demonstrate some of the functionality of the MediaWiki API available in the package WikimediR. The reference manual is available here: <https://cran.r-project.org/web/packages/WikipediR/WikipediR.pdf>
+
+#A category based query into Wikipedia
+
+As a first test, we will try to find pages in a specific category. We'll use "Post-Impressionism" as our search category. 
+
+```{r}
+library(WikipediR) #loads the libarary needed
+pages = pages_in_category("en","wikipedia",categories="Post-Impressionism") #a function available to search categories
+head(pages)
+class(pages) 
+```
+
+This is a bit messy, so let's see if there are other options.
+
+#Cleaner return data
+
+Fortunately the API Wrapper allows us to add the flag "clean_response = TRUE". This takes the data from a unique data format and converts it to an R data.frame object. 
+
+```{r}
+pages = pages_in_category("en","wikipedia",categories="Post-Impressionism", clean_response = TRUE) 
+head(pages)
+class(pages)  
+```
+
+Now we're cooking! 
+
+#Now let's play! 
+
+We can now do easier manipulations to the data, such as: 
+
+Set up a boolean mask to identify the locations of records of interest: 
+
+```{r}
+#Set up boolean mask to identify where the record of interest is
+mask = pages$title == "Pointillism"
+mask
+```
+
+Apply those masks to isolate the record of interest: 
+```{r}
+#Apply boolean mask to obtain record of interest
+pageOfInterest = pages[mask,]
+pageOfInterest
+```
+
+And use that isolated data to get execute additional queries into the API: 
+
+```{r}
+#Get Content for pageOfInterest
+content = page_content("en","wikipedia",page_name = pageOfInterest$title)
+content
+```
+
+#What next?
+
+From there we can start to manipulate the content of the page or other information for our intended purpose. But that is a task for another day. 
+
+#Session Information
+
+```{r}
+sessionInfo()
+```
+
+
+
